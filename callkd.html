@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Perfil do LinkedIn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        .options label {
+            cursor: pointer;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Avaliação de Perfil do LinkedIn</h1>
+
+    <div id="question-container" class="question">
+        <!-- Perguntas serão injetadas aqui -->
+    </div>
+
+    <button id="next-btn">Próxima</button>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Foto de Perfil",
+            options: [
+                { text: "Perfil com foto profissional.", points: 1.5 },
+                { text: "Perfil com foto informal.", points: 1 },
+                { text: "Perfil sem foto.", points: 0 }
+            ]
+        },
+        {
+            question: "Título Profissional",
+            options: [
+                { text: "Título que reflete claramente sua posição e setor.", points: 2 },
+                { text: "Título que é vago ou genérico.", points: 1 },
+                { text: "Título não preenchido.", points: 0 }
+            ]
+        },
+        {
+            question: "Resumo/Apresentação Pessoal",
+            options: [
+                { text: "Resumo bem escrito, que destaca habilidades e realizações.", points: 2 },
+                { text: "Resumo que menciona habilidades, mas sem detalhamento.", points: 1 },
+                { text: "Resumo em branco ou muito curto.", points: 0 }
+            ]
+        },
+        {
+            question: "Principais Competências",
+            options: [
+                { text: "Competências principais listadas, com múltiplos endossos.", points: 2 },
+                { text: "Competências listadas, mas com poucos ou nenhum endosso.", points: 1 },
+                { text: "Nenhuma competência principal listada.", points: 0 }
+            ]
+        },
+        {
+            question: "Recomendações",
+            options: [
+                { text: "Múltiplas recomendações de qualidade.", points: 2 },
+                { text: "Uma ou duas recomendações.", points: 1 },
+                { text: "Nenhuma recomendação.", points: 0 }
+            ]
+        },
+        {
+            question: "Projetos",
+            options: [
+                { text: "Projetos listados que demonstram habilidades e experiências.", points: 1.5 },
+                { text: "Projetos listados, mas sem muita relevância.", points: 1 },
+                { text: "Nenhum projeto listado.", points: 0 }
+            ]
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionContainer = document.getElementById('question-container');
+    const nextBtn = document.getElementById('next-btn');
+    const resultContainer = document.getElementById('result');
+
+    function showQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        questionContainer.innerHTML = `
+            <h2>${currentQuestion.question}</h2>
+            <ul class="options">
+                ${currentQuestion.options.map((option, index) => `
+                    <li>
+                        <label>
+                            <input type="radio" name="option" value="${option.points}">
+                            ${option.text}
+                        </label>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+    }
+
+    function showResult() {
+        let resultText = '';
+        if (score >= 9) {
+            resultText = "Perfil Excelente (9 a 11 pontos): Um perfil muito bem elaborado, que reflete profissionalismo, clareza, e relevância. Este perfil maximiza as oportunidades de networking e atração de recrutadores.";
+        } else if (score >= 6) {
+            resultText = "Perfil Bom (6 a 8,5 pontos): Um perfil sólido e bem estruturado, mas com algumas áreas que poderiam ser aprimoradas para destacar melhor suas qualificações e experiências.";
+        } else if (score >= 3) {
+            resultText = "Perfil Médio (3 a 5,5 pontos): Um perfil funcional, mas que carece de detalhes ou possui informações incompletas. Há espaço significativo para melhorias para aumentar sua atratividade no LinkedIn.";
+        } else {
+            resultText = "Perfil Insuficiente (0 a 2,5 pontos): Um perfil que não aproveita as ferramentas e espaços disponíveis no LinkedIn. Esse perfil é menos provável de atrair oportunidades significativas.";
+        }
+        resultContainer.innerHTML = `<h2>Resultado</h2><p>${resultText}</p>`;
+        resultContainer.style.display = 'block';
+    }
+
+    nextBtn.addEventListener('click', () => {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        if (selectedOption) {
+            score += parseFloat(selectedOption.value);
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                questionContainer.style.display = 'none';
+                nextBtn.style.display = 'none';
+                showResult();
+            }
+        } else {
+            alert('Por favor, selecione uma opção.');
+        }
+    });
+
+    // Inicialize a primeira pergunta
+    showQuestion();
+</script>
+
+</body>
+</html>
